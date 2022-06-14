@@ -1,0 +1,75 @@
+.game {
+  width: 600px;
+  height: 201px;
+  border: 1px dashed black;
+  margin: auto;
+  display: flex;
+  align-items: flex-end;
+  background-color: cadetblue;
+}
+
+#dino {
+  width: 50px;
+  height: 50px;
+  background-image: url(img/dino.png);
+  background-size: 50px 50px;
+  position: absolute;
+  /* top: 15  0px; */
+  /* top: 150px; */
+}
+
+.jump {
+  animation: dinoJump 0.6s linear;
+}
+@keyframes dinoJump {
+  0% {
+    top: 160px;
+  }
+
+  30% {
+    top: 130px;
+  }
+
+  50% {
+    top: 80px;
+  }
+
+  80% {
+    top: 130px;
+  }
+
+  100% {
+    top: 160px;
+  }
+}
+
+.squat {
+  background-image: url(img/dino-squat.png) !important;
+  background-size: 50px 30px !important;
+}
+
+#cactus-container {
+  height: 40px;
+  width: 600px;
+  background-color: aquamarine;
+}
+
+#cactus {
+  width: 20px;
+  height: 40px;
+  position: relative;
+  right: 600px;
+  background-image: url("img/cactus.png");
+  background-size: 20px 40px;
+  animation: cactusRun 1.4s infinite linear;
+}
+@keyframes cactusRun {
+  0% {
+    left: 580px;
+  }
+
+  100% {
+    left: -20px;
+  }
+}
+
