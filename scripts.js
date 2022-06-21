@@ -1,3 +1,24 @@
+let score = document.querySelector("#score");
+
+
+let interval = null;
+let playerScore = 0;
+
+let scoreCounter = () => {
+  playerScore++;
+  score.innerHTML = `Score <b>${playerScore}</b>`;
+}
+
+window.addEventListener("keydown", function (event){
+  if (event.keyCode === 38){
+    gameOver.style.display = "none";
+
+    let playerScore = 0;
+    interval = setInterval(scoreCounter, 200);
+  }
+})
+
+////////////////////////////////////////////////////////////////////////////////
 class Cactus {
   cactusElement = document.getElementById("cactus");
   xSize = 50;
