@@ -3,7 +3,9 @@ const context = canvas.getContext('2d');
 
 //Definimos as variáveis
 let score;
+let scoreText;
 let highscore;
+let highscoreText;
 let dino;
 let gravity;
 let obstacles = [];
@@ -116,6 +118,26 @@ class Obstacle {
     }
 }
 
+class Text {
+    constructor (t, x, y, a, c, s) {
+        this.t = t;
+        this.x = x;
+        this.y = y;
+        this.a = a;
+        this.c = c;
+        this.s = s;
+    }
+
+    Draw() {
+        context.beginPath();
+        context.fillStyle = this.c;
+        context.font = this.s + "px sans-serif";
+        context.textAlign = this.a;
+        context.fillText(this.t, this.x, this.y);
+        context.closePath();
+    }
+}
+
 // Game Functions
 function SpawnObstacle() {
     let size = RandomIntInRange(20, 70);
@@ -150,7 +172,15 @@ function init() {
     score = 0;
     highscore = 0;
 
+    if (localStorage.getItem('highscore')) {
+        highscore = localStorage.getItem('highscore');
+    }
+
     dino = new Dino(25, canvas.height - 150, 50, 50);
+
+    scoreText = new Text("Score: " + score, 25, 25, "left", "#212121", "20");
+    highscoreText = new Text("Highscore: " + highscore, canvas.width - 25,
+        25, "right", "#212121", "20");
 
     requestAnimationFrame(Update)
 }
@@ -162,7 +192,57 @@ function Update() {
     requestAnimationFrame(Update)
     context.clearRect(0, 0, canvas.width, canvas.height)
 
-    dino.Animate()
+    spawnTimer--;
+    if (spawnTimer <= 0) {
+        SpawnObstacle();
+        console.log(obstacles);
+
+        spawnTimer = initialSpawnTimer - gameSpeed * 8;
+
+        if (spawnTimer < 60) {
+            spawnTimer = 60;
+
+        }
+    }
+
+    // Spawn Enemies
+    for (let i = 0; i < obstacles.length; i++) {
+        let o = obstacles[i];
+
+        if (o.x + o.w < 0) {
+            obstacles.splice(i, 1);
+        }
+
+        if (dino.x < o.x + o.w
+            && dino.x + dino.w > o.x
+            && dino.y < o.y + o.h
+            && dino.y + dino.h > o.y) {
+            obstacles = [];
+            score = 0;
+            spawnTimer = initialSpawnTimer;
+            gameSpeed = 3;
+            window.localStorage.setItem('highscore', highscore);
+        }
+
+        o.Update();
+    }
+
+    dino.Animate();
+
+    score++;
+    scoreText.t = "Score: " + score;
+    scoreText.Draw();
+    
+    if (score > highscore) {
+        highscore = score;
+        highscoreText.t = "Highscore: " + highscore;
+    }
+
+    highscoreText.Draw();
+
+
+    gameSpeed += 0.003;
+    console.log(gameSpeed);
 }
 
 init();
