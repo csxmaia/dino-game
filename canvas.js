@@ -36,15 +36,16 @@ class Dino {
         this.w = w
         this.h = h
 
+        this.originalHeight = h;
+
         this.dy = 0;
         this.jumpForce = 15;
-        this.originalHeight = h;
         this.grounded = false;
         this.jumpTimer = 0;
         this.dinoAgachado = false;
     }
 
-    //Definimos o estilo do elemento
+    //Função para desenhar o Dino na Tela com a cor #000 e nas suas posições
     Draw() {
         context.beginPath();
         context.fillStyle = "#000";
@@ -60,11 +61,11 @@ class Dino {
         context.closePath();
     }
 
+    //Função responsavel por animar o Dino, sempre executada
     Animate() {
         //Executará a ação do pulo caso seja pressionada a tela SETA P/ CIMA ou ESPAÇO
         if(keys['ArrowUp'] || keys['Space']) {
             this.Jump();
-            console.log('jump');
         } else {
             this.jumpTimer = 0;
         }
@@ -77,20 +78,27 @@ class Dino {
             this.h = this.originalHeight;
         }
 
+        
         this.y += this.dy; 
 
-        // Animação realizada caso a condição seja válida (da posição que está no Y e na altura
-        //Caso seja invalido significa que ele ta no chao
+        // se a posição de y do dino + a sua altura (altura do objeto do dino) é menor que canvas.height (borda final do canvas/chão), 
+        // quer dizer que o dino nã está no chão, logo
         if (this.y + this.h < canvas.height) {
+            // a gravidade será aplicada no atributo dy
             this.dy += gravity;
+            // atributo de estar no chão será setado como false
             this.grounded = false;
         } else {
+            // o atributo que aplica gravidade será zerado, pois não será mais necessario aplicar a gravidade no objeto
             this.dy = 0
+            // o objeto está no chão, logo setado como true
             this.grounded = true;
-            this.y = canvas.height - this.h;
+            // seta o y na posicao original, para garantir a total queda
+            // this.y = canvas.height - this.h;
+            this.y = this.originalHeight;
         }
     
-
+        // irá desenhar o objeto na tela novamnete com as posições atualizadas
         this.Draw();
     }
 
@@ -173,7 +181,9 @@ function RandomIntInRange(min, max) {
 }
 
 
+//Função inicial
 function init() {
+    //pega as dimensões da tela
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -201,6 +211,7 @@ function init() {
 let initialSpawnTimer = 200;
 let spawnTimer = initialSpawnTimer;
 
+//
 function Update() {
     requestAnimationFrame(Update)
     context.clearRect(0, 0, canvas.width, canvas.height)
