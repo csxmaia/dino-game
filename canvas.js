@@ -245,9 +245,9 @@ function Update() {
             && dino.x + dino.w > o.x
             && dino.y < o.y + o.h
             && dino.y + dino.h > o.y) {
-            loseMenu = true;
             obstacles = [];
             score = 0;
+            loseMenu = true;
             spawnTimer = initialSpawnTimer;
             gameSpeed = 3;
             window.localStorage.setItem('highscore', highscore);
