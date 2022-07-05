@@ -1,5 +1,7 @@
 const canvas = document.getElementById('dino-game');
 const context = canvas.getContext('2d');
+const dinoNormal = document.getElementById("dino-normal");
+const dinoAgachado = document.getElementById("dino-rebaixado");
 
 //Definimos as variáveis
 let score;
@@ -39,13 +41,22 @@ class Dino {
         this.originalHeight = h;
         this.grounded = false;
         this.jumpTimer = 0;
+        this.dinoAgachado = false;
     }
 
     //Definimos o estilo do elemento
     Draw() {
         context.beginPath();
         context.fillStyle = "#000";
-        context.fillRect(this.x, this.y, this.w, this.h);
+       
+
+        if (this.dinoAgachado) {
+            context.drawImage(dinoAgachado, this.x, this.y, this.w, this.h);
+        } else {
+            context.drawImage(dinoNormal, this.x, this.y, this.w, this.h);
+        }
+
+        //context.fillRect(this.x, this.y, this.w, this.h);
         context.closePath();
     }
 
@@ -58,9 +69,11 @@ class Dino {
             this.jumpTimer = 0;
         }
 
-        if (keys['ShiftLeft'] || keys['KeyS']) {
+        if (keys['ArrowDown'] || keys['KeyS']) {
+            this.dinoAgachado = true;
             this.h = this.originalHeight / 2;
         } else {
+            this.dinoAgachado = false;
             this.h = this.originalHeight;
         }
 
@@ -176,7 +189,7 @@ function init() {
         highscore = localStorage.getItem('highscore');
     }
 
-    dino = new Dino(25, canvas.height - 150, 50, 50);
+    dino = new Dino(25, canvas.height - 150, 100, 100);
 
     scoreText = new Text("Score: " + score, 25, 25, "left", "#212121", "20");
     highscoreText = new Text("Highscore: " + highscore, canvas.width - 25,
@@ -242,7 +255,6 @@ function Update() {
 
 
     gameSpeed += 0.003;
-    console.log(gameSpeed);
 }
 
 init();
