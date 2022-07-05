@@ -12,6 +12,7 @@ let obstacles = [];
 let enemies;
 let gameSpeed;
 let keys = {};
+let loseMenu;
 
 // ArrowDown
 document.addEventListener("keydown", function(e) {
@@ -82,8 +83,8 @@ class Dino {
             // o objeto está no chão, logo setado como true
             this.grounded = true;
             // seta o y na posicao original, para garantir a total queda
-            // this.y = canvas.height - this.h;
-            this.y = this.originalHeight;
+            this.y = canvas.height - this.h;
+            // this.y = this.originalHeight;
         }
     
         // irá desenhar o objeto na tela novamnete com as posições atualizadas
@@ -196,12 +197,15 @@ function init() {
     requestAnimationFrame(Update)
 }
 
+
 let initialSpawnTimer = 200;
 let spawnTimer = initialSpawnTimer;
 
 //
 function Update() {
-    requestAnimationFrame(Update)
+    if(!loseMenu) {
+        requestAnimationFrame(Update)
+    }
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     spawnTimer--;
@@ -229,6 +233,7 @@ function Update() {
             && dino.x + dino.w > o.x
             && dino.y < o.y + o.h
             && dino.y + dino.h > o.y) {
+            loseMenu = true;
             obstacles = [];
             score = 0;
             spawnTimer = initialSpawnTimer;
