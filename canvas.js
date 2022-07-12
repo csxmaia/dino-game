@@ -15,6 +15,7 @@ let enemies;
 let gameSpeed;
 let keys = {};
 let loseMenu;
+let loseMenuContainer;
 
 // ArrowDown
 document.addEventListener("keydown", function(e) {
@@ -141,21 +142,40 @@ class Obstacle {
 }
 
 class Text {
-    constructor (t, x, y, a, c, s) {
-        this.t = t;
-        this.x = x;
-        this.y = y;
-        this.a = a;
-        this.c = c;
-        this.s = s;
+    constructor (text, positionX, positionY, align, color, size) {
+        this.text = text;
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.align = align;
+        this.color = color;
+        this.size = size;
     }
 
     Draw() {
         context.beginPath();
-        context.fillStyle = this.c;
-        context.font = this.s + "px sans-serif";
-        context.textAlign = this.a;
-        context.fillText(this.t, this.x, this.y);
+        context.fillStyle = this.color;
+        context.font = this.size + "px sans-serif";
+        context.textAlign = this.align;
+        context.fillText(this.text, this.positionX, this.positionY);
+        context.closePath();
+    }
+}
+
+
+class Rectangle {
+    constructor(color, height, width, positionX, positionY) {
+        this.color = color;
+        this.height = height;
+        this.width = width;
+        this.positionX = positionX;
+        this.positionY = positionY;
+    }
+
+    Draw() {
+        context.beginPath();
+        context.fillStyle = this.color;
+        context.rect(this.positionX, this.positionY, this.width, this.height);
+        context.stroke();
         context.closePath();
     }
 }
@@ -201,11 +221,11 @@ function init() {
     }
 
     dino = new Dino(25, canvas.height - 150, 100, 100);
-
+    
     scoreText = new Text("Score: " + score, 25, 25, "left", "#212121", "20");
     highscoreText = new Text("Highscore: " + highscore, canvas.width - 25,
-        25, "right", "#212121", "20");
-
+    25, "right", "#212121", "20");
+    
     requestAnimationFrame(Update)
 }
 
@@ -213,12 +233,34 @@ function init() {
 let initialSpawnTimer = 200;
 let spawnTimer = initialSpawnTimer;
 
-//
 function Update() {
-    if(!loseMenu) {
-        requestAnimationFrame(Update)
+    requestAnimationFrame(Update)
+    if(loseMenu) {
+        gameLoseUpdate();
+    }else {
+        gameActionUpdate();
     }
-    context.clearRect(0, 0, canvas.width, canvas.height)
+  
+}
+
+function gameLoseUpdate() {
+    let menuHeight = 400;
+    let menuWidth = 800;
+    let menuPositionX = canvas.width/2 - menuWidth/2;
+    let menuPositionY = canvas.height/2 - menuHeight/2;
+    loseMenuContainer = new Rectangle('#808080', menuHeight, menuWidth, menuPositionX, menuPositionY);
+
+    let textPositionX = menuPositionX;
+    let textPositionY = menuPositionY + (menuHeight/2);
+    let textAlign = "center";
+
+    loseText = new Text("You Lose!", textPositionX, textPositionY, textAlign, "#000", "20");
+
+    loseMenuContainer.Draw();
+}
+
+function gameActionUpdate(){
+      context.clearRect(0, 0, canvas.width, canvas.height)
 
     spawnTimer--;
     if (spawnTimer <= 0) {
@@ -245,9 +287,8 @@ function Update() {
             && dino.x + dino.w > o.x
             && dino.y < o.y + o.h
             && dino.y + dino.h > o.y) {
-            obstacles = [];
-            score = 0;
             loseMenu = true;
+            obstacles = [];
             spawnTimer = initialSpawnTimer;
             gameSpeed = 3;
             window.localStorage.setItem('highscore', highscore);
@@ -269,8 +310,8 @@ function Update() {
 
     highscoreText.Draw();
 
-
     gameSpeed += 0.003;
 }
+
 
 init();
