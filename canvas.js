@@ -194,7 +194,7 @@ function SpawnObstacle() {
     obstacles.push(obstacle);
 }
 
-SpawnObstacle();
+//SpawnObstacle();
 
 function RandomIntInRange(min, max) {
     return Math.round(Math.random() * (max - min) + min);
@@ -214,6 +214,7 @@ function init() {
     gravity = 1;
 
     score = 0;
+    console.log("score iniciou" + score);
     highscore = 0;
 
     if (localStorage.getItem('highscore')) {
@@ -265,7 +266,7 @@ function gameActionUpdate(){
     spawnTimer--;
     if (spawnTimer <= 0) {
         SpawnObstacle();
-        console.log(obstacles);
+        //console.log(obstacles);
 
         spawnTimer = initialSpawnTimer - gameSpeed * 8;
 
@@ -300,12 +301,13 @@ function gameActionUpdate(){
     dino.Animate();
 
     score++;
-    scoreText.t = "Score: " + score;
+    console.log("aumentou score .." + score);
+    scoreText.text = "Score: " + score;
     scoreText.Draw();
     
     if (score > highscore) {
         highscore = score;
-        highscoreText.t = "Highscore: " + highscore;
+        highscoreText.text = "Highscore: " + highscore;
     }
 
     highscoreText.Draw();
