@@ -250,14 +250,23 @@ function gameLoseUpdate() {
     let menuPositionX = canvas.width/2 - menuWidth/2;
     let menuPositionY = canvas.height/2 - menuHeight/2;
     loseMenuContainer = new Rectangle('#808080', menuHeight, menuWidth, menuPositionX, menuPositionY);
+    
+    let textGameOverPositionX = menuPositionX + (menuWidth/2);
+    let textGameOverPositionY = menuPositionY + (menuHeight/3.5);
 
-    let textPositionX = menuPositionX;
-    let textPositionY = menuPositionY + (menuHeight/2);
-    let textAlign = "center";
+    gameOverText = new Text("Game Over", textGameOverPositionX, textGameOverPositionY, "center", "#000", "42");
 
-    loseText = new Text("You Lose!", textPositionX, textPositionY, textAlign, "#000", "20");
 
+    let textPositionX = menuPositionX + (menuWidth/2);
+    let textPositionY = menuPositionY + (menuHeight/1.5);
+
+    startAgainText = new Text("Pressione espaço para iniciar novamente.", textPositionX, textPositionY, "center", "#000", "24");
+    
     loseMenuContainer.Draw();
+    gameOverText.Draw();
+    startAgainText.Draw();
+
+    let itens = []
 }
 
 function gameActionUpdate(){
