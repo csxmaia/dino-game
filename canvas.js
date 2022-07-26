@@ -182,7 +182,11 @@ class Rectangle {
 
 // Game Functions
 function SpawnObstacle() {
-    let size = RandomIntInRange(20, 70);
+
+    //criar funcao pra gerar 3 tipos de obstaculos aleatorios
+    
+
+    let size = 60;
     let type = RandomIntInRange(0, 1);
     let obstacle = new Obstacle(canvas.width + size, canvas.height - size,
         size, size, '#2484E4');
