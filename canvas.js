@@ -16,6 +16,7 @@ let gameSpeed;
 let keys = {};
 let loseMenu;
 let loseMenuContainer;
+let loseMenuTextColor = "#000";
 
 // ArrowDown
 document.addEventListener("keydown", function(e) {
@@ -51,7 +52,6 @@ class Dino {
     Draw() {
         context.beginPath();
         context.fillStyle = "#000";
-       
 
         if (this.dinoAgachado) {
             context.drawImage(dinoAgachado, this.x, this.y, this.w, this.h);
@@ -59,7 +59,6 @@ class Dino {
             context.drawImage(dinoNormal, this.x, this.y, this.w, this.h);
         }
 
-        //context.fillRect(this.x, this.y, this.w, this.h);
         context.closePath();
     }
 
@@ -186,7 +185,7 @@ class Rectangle {
 
 function SpawnObstacle() {
     let size = 60;
-    let type = RandomIntInRange(0, 1);
+    let type = Math.round(Math.random() * (1 - 0) + 0);
     let obstacle = new Obstacle(canvas.width + size, canvas.height - size,
         size, size, '#2484E4');
 
@@ -195,21 +194,6 @@ function SpawnObstacle() {
     }
 
     obstacles.push(obstacle);
-}
-
-function RandomIntInRange(min, max) {
-    return Math.round(Math.random() * (max - min) + min);
-
-}
-
-function UpdateFrames() {
-    requestAnimationFrame(UpdateFrames)
-    if(loseMenu) {
-        gameLoseUpdate();
-    }else {
-        gameNormalActionUpdate();
-    }
-  
 }
 
 function gameLoseUpdate() {
@@ -227,7 +211,13 @@ function gameLoseUpdate() {
     let textPositionX = menuPositionX + (menuWidth/2);
     let textPositionY = menuPositionY + (menuHeight/1.5);
 
-    startAgainText = new Text("Pressione espaço para iniciar novamente.", textPositionX, textPositionY, "center", "#000", "24");
+    if(loseMenuTextColor === "#000") {
+        loseMenuTextColor = "#FFF"
+    } else {
+        loseMenuTextColor = "#000"
+    }
+
+    startAgainText = new Text("Pressione espaço para iniciar novamente.", textPositionX, textPositionY, "center", loseMenuTextColor, "24");
     
     let loseContainer = setInterval(() => {
         loseMenuContainer.Draw();
@@ -297,9 +287,18 @@ function spawnObstacle() {
     }
 }
 
+function UpdateFrames() {
+    requestAnimationFrame(UpdateFrames)
+    if(loseMenu) {
+        gameLoseUpdate();
+    }else {
+        gameNormalActionUpdate();
+    }
+}
+
 function initVariables() {
     loseMenu = false
-    
+
     initialSpawnTimer = 200;
     spawnTimer = initialSpawnTimer;
     obstacles = []
@@ -327,7 +326,7 @@ function initVisual() {
 function init() {
     initVariables();
     initVisual();
-    requestAnimationFrame(UpdateFrames)
+    UpdateFrames()
 }
 
 init();
