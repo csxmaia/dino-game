@@ -139,6 +139,10 @@ class Obstacle {
         context.fillRect(this.x, this.y, this.w, this.h);
         context.closePath();
     }
+
+    removeObstacle(position) {
+        obstacles.splice(position, 1);
+    }
 }
 
 class Text {
@@ -180,12 +184,7 @@ class Rectangle {
     }
 }
 
-// Game Functions
 function SpawnObstacle() {
-
-    //criar funcao pra gerar 3 tipos de obstaculos aleatorios
-    
-
     let size = 60;
     let type = RandomIntInRange(0, 1);
     let obstacle = new Obstacle(canvas.width + size, canvas.height - size,
@@ -198,52 +197,17 @@ function SpawnObstacle() {
     obstacles.push(obstacle);
 }
 
-//SpawnObstacle();
-
 function RandomIntInRange(min, max) {
     return Math.round(Math.random() * (max - min) + min);
 
 }
 
-
-//Função inicial
-function init() {
-    //pega as dimensões da tela
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    context.font = "20px sans-serif";
-
-    gameSpeed = 3;
-    gravity = 1;
-
-    score = 0;
-    console.log("score iniciou" + score);
-    highscore = 0;
-
-    if (localStorage.getItem('highscore')) {
-        highscore = localStorage.getItem('highscore');
-    }
-
-    dino = new Dino(25, canvas.height - 150, 100, 100);
-    
-    scoreText = new Text("Score: " + score, 25, 25, "left", "#212121", "20");
-    highscoreText = new Text("Highscore: " + highscore, canvas.width - 25,
-    25, "right", "#212121", "20");
-    
-    requestAnimationFrame(Update)
-}
-
-
-let initialSpawnTimer = 200;
-let spawnTimer = initialSpawnTimer;
-
-function Update() {
-    requestAnimationFrame(Update)
+function UpdateFrames() {
+    requestAnimationFrame(UpdateFrames)
     if(loseMenu) {
         gameLoseUpdate();
     }else {
-        gameActionUpdate();
+        gameNormalActionUpdate();
     }
   
 }
@@ -260,61 +224,40 @@ function gameLoseUpdate() {
 
     gameOverText = new Text("Game Over", textGameOverPositionX, textGameOverPositionY, "center", "#000", "42");
 
-
     let textPositionX = menuPositionX + (menuWidth/2);
     let textPositionY = menuPositionY + (menuHeight/1.5);
 
     startAgainText = new Text("Pressione espaço para iniciar novamente.", textPositionX, textPositionY, "center", "#000", "24");
     
-    loseMenuContainer.Draw();
-    gameOverText.Draw();
-    startAgainText.Draw();
+    let loseContainer = setInterval(() => {
+        loseMenuContainer.Draw();
+        gameOverText.Draw();
+        startAgainText.Draw();
+    })
 
-    let itens = []
+    if(keys['Space']) {
+        init()
+        clearInterval(loseContainer)
+    } 
+
 }
 
-function gameActionUpdate(){
-      context.clearRect(0, 0, canvas.width, canvas.height)
+function gameNormalActionUpdate(){
+    context.clearRect(0, 0, canvas.width, canvas.height)
 
     spawnTimer--;
-    if (spawnTimer <= 0) {
-        SpawnObstacle();
-        //console.log(obstacles);
-
-        spawnTimer = initialSpawnTimer - gameSpeed * 8;
-
-        if (spawnTimer < 60) {
-            spawnTimer = 60;
-
-        }
-    }
-
-    // Spawn Enemies
-    for (let i = 0; i < obstacles.length; i++) {
-        let o = obstacles[i];
-
-        if (o.x + o.w < 0) {
-            obstacles.splice(i, 1);
-        }
-
-        if (dino.x < o.x + o.w
-            && dino.x + dino.w > o.x
-            && dino.y < o.y + o.h
-            && dino.y + dino.h > o.y) {
-            loseMenu = true;
-            obstacles = [];
-            spawnTimer = initialSpawnTimer;
-            gameSpeed = 3;
-            window.localStorage.setItem('highscore', highscore);
-        }
-
-        o.Update();
-    }
+    spawnObstacle();
+    checkObstacles(); 
 
     dino.Animate();
 
+    updateScore();
+
+    gameSpeed += 0.003;
+}
+
+function updateScore() {
     score++;
-    console.log("aumentou score .." + score);
     scoreText.text = "Score: " + score;
     scoreText.Draw();
     
@@ -324,9 +267,67 @@ function gameActionUpdate(){
     }
 
     highscoreText.Draw();
-
-    gameSpeed += 0.003;
 }
 
+function checkObstacles() {
+    for (let i = 0; i < obstacles.length; i++) {
+        let o = obstacles[i];
+
+        if (o.x + o.w < 0) {
+            o.removeObstacle(i)
+        }
+
+        if (dino.x < o.x + o.w && dino.x + dino.w > o.x && dino.y < o.y + o.h && dino.y + dino.h > o.y) {
+            loseMenu = true;
+            window.localStorage.setItem('highscore', highscore);
+        }
+
+        o.Update();
+    }
+}
+
+function spawnObstacle() {
+    if (spawnTimer <= 0) {
+        SpawnObstacle();
+        spawnTimer = initialSpawnTimer - gameSpeed * 8;
+        if (spawnTimer < 60) {
+            spawnTimer = 60;
+
+        }
+    }
+}
+
+function initVariables() {
+    loseMenu = false
+    
+    initialSpawnTimer = 200;
+    spawnTimer = initialSpawnTimer;
+    obstacles = []
+    gameSpeed = 3;
+    gravity = 1;
+    score = 0;
+    
+    highscore = 0;
+    if (localStorage.getItem('highscore')) {
+        highscore = localStorage.getItem('highscore');
+    }
+}
+
+function initVisual() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    context.font = "20px sans-serif";
+
+    dino = new Dino(25, canvas.height - 150, 100, 100);
+    scoreText = new Text("Score: " + score, 25, 25, "left", "#212121", "20");
+    highscoreText = new Text("Highscore: " + highscore, canvas.width - 25,
+    25, "right", "#212121", "20");
+}
+
+function init() {
+    initVariables();
+    initVisual();
+    requestAnimationFrame(UpdateFrames)
+}
 
 init();
